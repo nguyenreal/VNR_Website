@@ -1,8 +1,97 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Navbar from "./components/Navbar";
 import ChatBox from "./components/ChatBox";
+
+function ThreeBackground() {
+  const mountRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    let animId: number;
+    const el = mountRef.current;
+    if (!el) return;
+    const THREE = (window as any).THREE;
+    if (!THREE) return;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, el.clientWidth / el.clientHeight, 0.1, 1000);
+    camera.position.z = 5;
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(el.clientWidth, el.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    el.appendChild(renderer.domElement);
+    const count = 2000;
+    const geo = new THREE.BufferGeometry();
+    const pos = new Float32Array(count * 3);
+    const col = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      pos[i*3]   = (Math.random()-0.5)*22;
+      pos[i*3+1] = (Math.random()-0.5)*22;
+      pos[i*3+2] = (Math.random()-0.5)*14;
+      const t = Math.random();
+      col[i*3]   = 0.78 + t*0.22;
+      col[i*3+1] = t*0.62;
+      col[i*3+2] = 0.04;
+    }
+    geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute("color",    new THREE.BufferAttribute(col, 3));
+    const mat = new THREE.PointsMaterial({ size: 0.06, vertexColors: true, transparent: true, opacity: 0.88, sizeAttenuation: true });
+    const points = new THREE.Points(geo, mat);
+    scene.add(points);
+    const onResize = () => {
+      camera.aspect = el.clientWidth / el.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(el.clientWidth, el.clientHeight);
+    };
+    window.addEventListener("resize", onResize);
+    let t = 0;
+    const animate = () => {
+      t += 0.0005;
+      points.rotation.y = t * 0.35;
+      points.rotation.x = Math.sin(t*0.7) * 0.12;
+      renderer.render(scene, camera);
+      animId = requestAnimationFrame(animate);
+    };
+    animate();
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", onResize);
+      renderer.dispose();
+      if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement);
+    };
+  }, []);
+  return (
+    <div ref={mountRef} style={{
+      position:"absolute", inset:0, zIndex:0,
+      background:"linear-gradient(160deg,#3D0A07 0%,#6B1410 45%,#1A0504 100%)",
+    }}/>
+  );
+}
+
+function HeroBackground() {
+  const [videoFailed, setVideoFailed] = useState(false);
+  const [threeReady, setThreeReady]   = useState(false);
+  useEffect(() => {
+    if ((window as any).THREE) { setThreeReady(true); return; }
+    const s = document.createElement("script");
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
+    s.onload = () => setThreeReady(true);
+    document.head.appendChild(s);
+  }, []);
+
+  if (!videoFailed) {
+    return (
+      <video autoPlay muted loop playsInline
+        onError={() => setVideoFailed(true)}
+        style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", zIndex:0 }}
+      >
+        <source src="/hero.mp4" type="video/mp4" onError={() => setVideoFailed(true)} />
+      </video>
+    );
+  }
+  if (threeReady) return <ThreeBackground />;
+  return <div style={{ position:"absolute", inset:0, zIndex:0, background:"linear-gradient(160deg,#3D0A07,#6B1410,#1A0504)" }}/>;
+}
+
 
 const MILESTONES = [
   {
@@ -74,14 +163,8 @@ export default function Home() {
         alignItems: "center",
         justifyContent: "center",
       }}>
-        {/* Video nền */}
-        <video autoPlay muted loop playsInline style={{
-          position: "absolute", inset: 0,
-          width: "100%", height: "100%",
-          objectFit: "cover", zIndex: 0,
-        }}>
-          <source src="/hero.mp4" type="video/mp4" />
-        </video>
+        {/* Video nền hoặc 3D particles */}
+        <HeroBackground />
 
         {/* Gradient overlay */}
         <div style={{
