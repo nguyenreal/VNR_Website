@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: geminiContents,
-          generationConfig: { maxOutputTokens: 1024, temperature: 0.6 },
+          generationConfig: { maxOutputTokens: 2048, temperature: 0.6 },
         }),
       }
     );
