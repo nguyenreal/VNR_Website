@@ -15,7 +15,7 @@ const SUGGESTED = [
 export default function HoiDapPage() {
   const [msgs, setMsgs] = useState<Msg[]>([{
     role: "assistant",
-    content: "Xin chào! Tôi là trợ lý AI chuyên về Lịch sử Đảng Cộng sản Việt Nam giai đoạn 1986–1991.\n\nBạn có thể hỏi tôi về bất kỳ sự kiện, chính sách hoặc nhân vật lịch sử nào trong giai đoạn Đổi Mới.",
+    content: "Xin chào! Tôi là trợ lý AI chuyên về Lịch sử Đảng Cộng sản Việt Nam ",
   }]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
