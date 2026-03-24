@@ -143,7 +143,7 @@ const MILESTONE_MODEL_LINKS = [
   "https://www.pacdora.com/share?filter_url=ps9uih6uct",
   "https://www.pacdora.com/share?filter_url=psyx9s2ew2",
   "https://www.pacdora.com/share?filter_url=ps4sf5034n",
-  "https://www.pacdora.com/share?filter_url=psnjkq8xi6",
+  "https://www.pacdora.com/share?filter_url=psjewkogbq",
   "https://www.pacdora.com/share?filter_url=psvepsysk0",
 ];
 
